@@ -4,7 +4,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['student_id']==='admin') {
     header('Location: login.php'); exit;
 }
 $sid = $_SESSION['user']['student_id'];
-// New query (with JOIN):
 $rows = $pdo->prepare(
     "SELECT h.*, u.name AS student_name 
      FROM history h
