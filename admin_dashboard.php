@@ -5,7 +5,16 @@ if (!isset($_SESSION['admin'])) {
 }
 
 $search = $_GET['search'] ?? '';
-$sql = "SELECT * FROM ticket_entries
+$sql = "SELECT 
+          student_id, 
+          student_name, 
+          student_phone, 
+          object_id, 
+          object_name, 
+          description,
+          lost_date, 
+          last_seen
+        FROM ticket_entries
         WHERE student_id LIKE ? OR object_name LIKE ? OR student_phone LIKE ?
         ORDER BY lost_date DESC";
 $stmt = $pdo->prepare($sql);
@@ -37,25 +46,37 @@ $stmt->execute([$like,$like,$like]);
   </form>
   <table id="admintable" class="table table-striped">
     <thead>
-      <tr>
-        <th>Student ID</th><th>Name</th><th>Phone</th><th>Object</th><th>Lost Date</th><th>Last Seen</th><th>Action</th>
-      </tr>
-    </thead>
+  <tr>
+    <th>Student ID</th>
+    <th>Name</th>
+    <th>Phone</th>
+    <th>Object</th>
+    <th>Description</th>  <!-- New column -->
+    <th>Lost Date</th>
+    <th>Last Seen</th>
+    <th>Action</th>
+  </tr>
+</thead>
     <tbody>
-    <?php foreach ($stmt as $row): ?>
-      <tr>
-        <td><?=$row['student_id']?></td>
-        <td><?=htmlspecialchars($row['student_name'])?></td>
-        <td><?=htmlspecialchars($row['student_phone'])?></td>
-        <td><?=htmlspecialchars($row['object_name'])?></td>
-        <td><?=$row['lost_date']?></td>
-        <td><?=htmlspecialchars($row['last_seen'])?></td>
-        <td>
-          <a class="btn btn-sm btn-warning" href="mark_returned.php?id=<?=$row['object_id']?>" onclick="return confirm('Mark as returned?')">Returned</a>
-        </td>
-      </tr>
-    <?php endforeach; ?>
-    </tbody>
+  <?php foreach ($stmt as $row): ?>
+    <tr>
+      <td><?= $row['student_id'] ?></td>
+      <td><?= htmlspecialchars($row['student_name']) ?></td>
+      <td><?= htmlspecialchars($row['student_phone']) ?></td>
+      <td><?= htmlspecialchars($row['object_name']) ?></td>
+      <td><?= htmlspecialchars($row['description']) ?></td>  <!-- New cell -->
+      <td><?= $row['lost_date'] ?></td>
+      <td><?= htmlspecialchars($row['last_seen']) ?></td>
+      <td>
+        <a class="btn btn-sm btn-warning" 
+           href="mark_returned.php?id=<?= $row['object_id'] ?>" 
+           onclick="return confirm('Mark as returned?')">
+          Returned
+        </a>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+</tbody>
   </table>
 </div>
 

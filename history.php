@@ -4,7 +4,14 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['student_id']==='admin') {
     header('Location: login.php'); exit;
 }
 $sid = $_SESSION['user']['student_id'];
-$rows = $pdo->prepare("SELECT * FROM history WHERE student_id=? ORDER BY returned_date DESC");
+// New query (with JOIN):
+$rows = $pdo->prepare(
+    "SELECT h.*, u.name AS student_name 
+     FROM history h
+     JOIN website_users u ON h.student_id = u.student_id
+     WHERE h.student_id = ? 
+     ORDER BY h.returned_date DESC"
+);
 $rows->execute([$sid]);
 ?>
 <!doctype html>
